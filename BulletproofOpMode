@@ -1,10 +1,21 @@
 package us.newberg.bulletproof.opmodes;
 
+
 import android.app.Activity;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.view.View;
+import android.net.Uri;
+import android.content.Context;
+import org.lasarobotics.vision.android.Cameras;
+import org.lasarobotics.vision.ftc.resq.Beacon;
+import org.lasarobotics.vision.opmode.LinearVisionOpMode;
+import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
+import org.lasarobotics.vision.util.ScreenOrientation;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
 
-import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
+//import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
 import com.qualcomm.hardware.hitechnic.HiTechnicNxtLightSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -15,16 +26,27 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.hitechnic.HiTechnicNxtUltrasonicSensor;
 
 //import us.newberg.bulletproof.lib.Servos;
+import org.lasarobotics.vision.opmode.LinearVisionOpMode;
+
+import java.io.File;
+
 import us.newberg.bulletproof.DriveTrain;
 import us.newberg.bulletproof.lib.Motors;
 
-public abstract class BulletproofOpMode extends LinearOpMode
+public  abstract class BulletproofOpMode extends LinearVisionOpMode
 {
     public HiTechnicNxtLightSensor LightSensor;
 
     public HiTechnicNxtUltrasonicSensor ultrasonicSensor;
 
-    public HiTechnicNxtColorSensor ColorSensor;
+    public MediaPlayer Darkness;
+    public MediaPlayer Danza;
+    public MediaPlayer DoIt;
+    public MediaPlayer BestAround;
+    public MediaPlayer HowWeDo;
+
+
+//    public HiTechnicNxtColorSensor ColorSensor;
     protected  DriveTrain _driveTrain;
 
 
@@ -46,12 +68,66 @@ public abstract class BulletproofOpMode extends LinearOpMode
 
         LightSensor = (HiTechnicNxtLightSensor) hardwareMap.lightSensor.get("LightSensor");
 
-        ColorSensor = (HiTechnicNxtColorSensor)hardwareMap.colorSensor.get("ColorSensor");
+        //ColorSensor = (HiTechnicNxtColorSensor)hardwareMap.colorSensor.get("ColorSensor");
 
-        ultrasonicSensor = (HiTechnicNxtUltrasonicSensor)hardwareMap.ultrasonicSensor.get("ultraSonicSensor");
+        //ultrasonicSensor = (HiTechnicNxtUltrasonicSensor)hardwareMap.ultrasonicSensor.get("ultraSonicSensor");
 
         _driveTrain = new DriveTrain(telemetry);
+
+//        Darkness = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/Darkness.mp3")));
+//        Darkness.setVolume(1, 1);
+//
+//        Danza = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/Danza.mp3")));
+//        Danza.setVolume(1, 1);
+//
+//        DoIt = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/DoIt.mp3")));
+//        DoIt.setVolume(1, 1);
+//
+//        BestAround = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/BestAround.mp3")));
+//        BestAround.setVolume(1, 1);
+//
+//        HowWeDo = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/HowWeDo.mp3")));
+//        HowWeDo.setVolume(1, 1);
+//
+//        DoIt.start();
+//        Darkness.start();
+//        Danza.start();
+//        BestAround.start();
+//        HowWeDo.start();
+//        DoIt.stop();
+//        Darkness.stop();
+//        Danza.stop();
+//        BestAround.stop();
+//        HowWeDo.stop();
     }
+
+//    public void runOpMode() throws InterruptedException {
+//        waitForVisionStart();
+//
+//        setCamera(Cameras.SECONDARY);
+//        setFrameSize(new Size(900, 900));
+//
+//        enableExtension(Extensions.BEACON);
+//        enableExtension(Extensions.ROTATION);
+//        enableExtension(Extensions.CAMERA_CONTROL);
+//
+//        beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+//
+//        beacon.setColorToleranceRed(0);
+//        beacon.setColorToleranceBlue(-0.1);
+//
+//        rotation.setIsUsingSecondaryCamera(true);
+//        rotation.disableAutoRotate();
+//        rotation.setActivityOrientationFixed(ScreenOrientation.PORTRAIT);
+//
+//        cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
+//        cameraControl.setAutoExposureCompensation();
+//
+//        Init();
+//
+//        waitForStart();
+//
+//    }
 
     public boolean lightSensor(HiTechnicNxtLightSensor lightSensor)
     {
@@ -153,7 +229,7 @@ public abstract class BulletproofOpMode extends LinearOpMode
     }
 
     public void Collector (int time) throws InterruptedException{
-        Motors.Collector().SetPower(.4);
+        Motors.Collector().SetPower(.25);
         sleep(time);
         Motors.Collector().SetPower(0);
         sleep(2000);
@@ -186,7 +262,7 @@ public abstract class BulletproofOpMode extends LinearOpMode
 //        colorSensor = (HiTechnicNxtColorSensor)hardwareMap.colorSensor.get("color sensor");
 
         // turn the LED on in the beginning, just so user will know that the sensor is active.
-        ColorSensor.enableLed(bLedOn);
+       // ColorSensor.enableLed(bLedOn);
 
         // wait for the start button to be pressed.
 
@@ -199,128 +275,128 @@ public abstract class BulletproofOpMode extends LinearOpMode
             bCurrState = gamepad1.x;
 
             // check for button state transitions.
-            if ((bCurrState == true) && (bCurrState != bPrevState))  {
-
-                // button is transitioning to a pressed state.  Toggle LED.
-                // on button press, enable the LED.
-                bLedOn = !bLedOn;
-                ColorSensor.enableLed(bLedOn);
-            }
-
-            // update previous state variable.
-            bPrevState = bCurrState;
-
-            // convert the RGB values to HSV values.
-            Color.RGBToHSV(ColorSensor.red(), ColorSensor.green(), ColorSensor.blue(), hsvValues);
-
-            // send the info back to driver station using telemetry function.
-            telemetry.addData("LED", bLedOn ? "On" : "Off");
-            telemetry.addData("Clear", ColorSensor.alpha());
-            telemetry.addData("Red  ", ColorSensor.red());
-            telemetry.addData("Green", ColorSensor.green());
-            telemetry.addData("Blue ", ColorSensor.blue());
-            telemetry.addData("Hue", hsvValues[0]);
-        telemetry.update();
-            // change the background color to match the color detected by the RGB sensor.
-            // pass a reference to the hue, saturation, and value array as an argument
-            // to the HSVToColor method.
-            if (ColorSensor.green() > 125){
-                color = 2;  //2 is red
-
-            }
-            else{
-                color = 1; // 1 is blue
-            }
-            if  (color == 2){    //this is for blue side and testing left side
-                //this is if red is the left most color
-                //rotate left
-//                Motors.FrontRight().SetPower(-.5);
-//                Motors.FrontLeft().SetPower(-.5);
-//                Motors.BackRight().SetPower(-.5);
-//                Motors.BackLeft().SetPower(-.5);
-//                sleep( 250);
-//                Motors.FrontRight().SetPower(0);
-//                Motors.FrontLeft().SetPower(0);
-//                Motors.BackRight().SetPower(0);
-//                Motors.BackLeft().SetPower(0);
-//                sleep(2000);
-
-                //left
-//                Motors.FrontRight().SetPower(-.5);
-//                Motors.FrontLeft().SetPower(.5);
-//                Motors.BackRight().SetPower(-.5);
-//                Motors.BackLeft().SetPower(.5);
-//                sleep(150);
-//                Motors.FrontRight().SetPower(0);
-//                Motors.FrontLeft().SetPower(0);
-//                Motors.BackRight().SetPower(0);
-//                Motors.BackLeft().SetPower(0);
-
+//            if ((bCurrState == true) && (bCurrState != bPrevState))  {
+//
+//                // button is transitioning to a pressed state.  Toggle LED.
+//                // on button press, enable the LED.
+//                bLedOn = !bLedOn;
+//                ColorSensor.enableLed(bLedOn);
+//            }
+//
+//            // update previous state variable.
+//            bPrevState = bCurrState;
+//
+//            // convert the RGB values to HSV values.
+//            Color.RGBToHSV(ColorSensor.red(), ColorSensor.green(), ColorSensor.blue(), hsvValues);
+//
+//            // send the info back to driver station using telemetry function.
+//            telemetry.addData("LED", bLedOn ? "On" : "Off");
+//            telemetry.addData("Clear", ColorSensor.alpha());
+//            telemetry.addData("Red  ", ColorSensor.red());
+//            telemetry.addData("Green", ColorSensor.green());
+//            telemetry.addData("Blue ", ColorSensor.blue());
+//            telemetry.addData("Hue", hsvValues[0]);
+//        telemetry.update();
+//            // change the background color to match the color detected by the RGB sensor.
+//            // pass a reference to the hue, saturation, and value array as an argument
+//            // to the HSVToColor method.
+//            if (ColorSensor.green() > 125){
+//                color = 2;  //2 is red
+//
+//            }
+//            else{
+//                color = 1; // 1 is blue
+//            }
+//            if  (color == 2){    //this is for blue side and testing left side
+//                //this is if red is the left most color
+//                //rotate left
+////                Motors.FrontRight().SetPower(-.5);
+////                Motors.FrontLeft().SetPower(-.5);
+////                Motors.BackRight().SetPower(-.5);
+////                Motors.BackLeft().SetPower(-.5);
+////                sleep( 250);
+////                Motors.FrontRight().SetPower(0);
+////                Motors.FrontLeft().SetPower(0);
+////                Motors.BackRight().SetPower(0);
+////                Motors.BackLeft().SetPower(0);
+////                sleep(2000);
+//
+//                //left
+////                Motors.FrontRight().SetPower(-.5);
+////                Motors.FrontLeft().SetPower(.5);
+////                Motors.BackRight().SetPower(-.5);
+////                Motors.BackLeft().SetPower(.5);
+////                sleep(150);
+////                Motors.FrontRight().SetPower(0);
+////                Motors.FrontLeft().SetPower(0);
+////                Motors.BackRight().SetPower(0);
+////                Motors.BackLeft().SetPower(0);
+//
+////                Motors.FrontRight().SetPower(.5);
+////                Motors.FrontLeft().SetPower(-.5);
+////                Motors.BackRight().SetPower(.5);
+////                Motors.BackLeft().SetPower(-.5);
+////                sleep( 2000);
+////                Motors.FrontRight().SetPower(0);
+////                Motors.FrontLeft().SetPower(0);
+////                Motors.BackRight().SetPower(0);
+////                Motors.BackLeft().SetPower(0);
+//
+//                //move backward, which seems like right
+//
 //                Motors.FrontRight().SetPower(.5);
 //                Motors.FrontLeft().SetPower(-.5);
 //                Motors.BackRight().SetPower(.5);
 //                Motors.BackLeft().SetPower(-.5);
-//                sleep( 2000);
+//                sleep( 700);
 //                Motors.FrontRight().SetPower(0);
 //                Motors.FrontLeft().SetPower(0);
 //                Motors.BackRight().SetPower(0);
 //                Motors.BackLeft().SetPower(0);
-
-                //move backward, which seems like right
-
-                Motors.FrontRight().SetPower(.5);
-                Motors.FrontLeft().SetPower(-.5);
-                Motors.BackRight().SetPower(.5);
-                Motors.BackLeft().SetPower(-.5);
-                sleep( 700);
-                Motors.FrontRight().SetPower(0);
-                Motors.FrontLeft().SetPower(0);
-                Motors.BackRight().SetPower(0);
-                Motors.BackLeft().SetPower(0);
-                sleep(3000);
-
-                return;
-
-            }
-            if (color == 1){
-                //this is if blue is the left most color
-                //rotate left
+//                sleep(3000);
+//
+//                return;
+//
+//            }
+//            if (color == 1){
+//                //this is if blue is the left most color
+//                //rotate left
+////                Motors.FrontRight().SetPower(-.5);
+////                Motors.FrontLeft().SetPower(-.5);
+////                Motors.BackRight().SetPower(-.5);
+////                Motors.BackLeft().SetPower(-.5);
+////                sleep( 250);
+////                Motors.FrontRight().SetPower(0);
+////                Motors.FrontLeft().SetPower(0);
+////                Motors.BackRight().SetPower(0);
+////                Motors.BackLeft().SetPower(0);
+////                sleep(2000);
+//
+//                //move forward, which seems like left
 //                Motors.FrontRight().SetPower(-.5);
-//                Motors.FrontLeft().SetPower(-.5);
+//                Motors.FrontLeft().SetPower(.5);
 //                Motors.BackRight().SetPower(-.5);
-//                Motors.BackLeft().SetPower(-.5);
-//                sleep( 250);
+//                Motors.BackLeft().SetPower(.5);
+//                sleep( 700);
 //                Motors.FrontRight().SetPower(0);
 //                Motors.FrontLeft().SetPower(0);
 //                Motors.BackRight().SetPower(0);
 //                Motors.BackLeft().SetPower(0);
-//                sleep(2000);
-
-                //move forward, which seems like left
-                Motors.FrontRight().SetPower(-.5);
-                Motors.FrontLeft().SetPower(.5);
-                Motors.BackRight().SetPower(-.5);
-                Motors.BackLeft().SetPower(.5);
-                sleep( 700);
-                Motors.FrontRight().SetPower(0);
-                Motors.FrontLeft().SetPower(0);
-                Motors.BackRight().SetPower(0);
-                Motors.BackLeft().SetPower(0);
-                sleep(3000);
-
-                return;
+//                sleep(3000);
+//
+//                return;
             }
 
-            relativeLayout.post(new Runnable() {
-                public void run() {
-                    relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
-                }
-            });
-
-            telemetry.update();
-            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+//            relativeLayout.post(new Runnable() {
+//                public void run() {
+//                    relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
+//                }
+//            });
+//
+//            telemetry.update();
+            //idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
-    }
+    //}
 
 
 
