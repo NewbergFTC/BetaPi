@@ -1,5 +1,7 @@
 package us.newberg.bulletproof.opmodes;
 
+import android.media.MediaPlayer;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -19,6 +21,7 @@ public class DriverOpMode extends BulletproofOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
+
         Init();
 
         Vector2f leftDrivePower = new Vector2f();
@@ -169,21 +172,23 @@ public class DriverOpMode extends BulletproofOpMode
 
             powerX = gamepadOneRight.x;
 
+
             if (Math.abs(gamepadOneRight.x) >= 0.1f) {
                 // Right
-                leftDrivePower.x = powerX;
-                leftDrivePower.y = powerX;
+                leftDrivePower.x = powerX/3 ;
+                leftDrivePower.y = powerX/3 ;
 
-                rightDrivePower.x = powerX;
-                rightDrivePower.y = powerX;
+                rightDrivePower.x = powerX/3 ;
+                rightDrivePower.y = powerX/3 ;
             }
+            
 
 
             _driveTrain.Drive(leftDrivePower, rightDrivePower);
             telemetry.addData("Left angle and quad", "%f, %d", gamepadOneLeftAngle, gamepadOneLeftAngleQuad);
             _driveTrain.UpdateTelemetry();
 
-            final float COLLECTOR_POWER = 0.5f;
+            final float COLLECTOR_POWER = 0.35f;
             final float Flipper_Power = -1f;
             boolean buttonCollectorToggle = gamepad1.a;
             boolean buttonshoot = gamepad1.b;
@@ -226,7 +231,64 @@ public class DriverOpMode extends BulletproofOpMode
 
             telemetry.addData("Collector", collectorToggle);
             telemetry.update();
-            idle();
+
+//            if (gamepad1.dpad_up) {
+//                DoIt.stop();
+//                Darkness.stop();
+//                Danza.stop();
+//                BestAround.stop();
+//                HowWeDo.stop();
+//
+//                DoIt.seekTo(0);
+//                DoIt.start();
+//            }
+//
+//            if (gamepad1.dpad_down) {
+//                DoIt.stop();
+//                Darkness.stop();
+//                Danza.stop();
+//                BestAround.stop();
+//                HowWeDo.stop();
+//
+//                Darkness.seekTo(0);
+//                Darkness.start();
+//            }
+//
+//            if (gamepad1.dpad_right) {
+//                DoIt.stop();
+//                Darkness.stop();
+//                Danza.stop();
+//                BestAround.stop();
+//                HowWeDo.stop();
+//
+//                Danza.seekTo(0);
+//                Danza.start();
+//            }
+//
+//            if (gamepad1.dpad_left) {
+//                DoIt.stop();
+//                Darkness.stop();
+//                Danza.stop();
+//                BestAround.stop();
+//                HowWeDo.stop();
+//
+//                BestAround.seekTo(0);
+//                BestAround.start();
+//            }
+//
+//            if (gamepad1.left_stick_button) {
+//                DoIt.stop();
+//                Darkness.stop();
+//                Danza.stop();
+//                BestAround.stop();
+//                HowWeDo.stop();
+//
+//                HowWeDo.seekTo(0);
+//                HowWeDo.start();
+//            }
+
+
+            //idle();
 
 
 //            double capHolderUp = 1;
@@ -242,15 +304,17 @@ public class DriverOpMode extends BulletproofOpMode
 //                Servos.CapHolder.setPosition(capHolderUp);
 //            }
 //
-//            boolean liftRaise = gamepad2.a;
-//            if (liftRaise) {
-//                Motors.Lifter().SetPower(.3);
-//            }
-//
-//            boolean liftLower = gamepad2.b;
-//            if (liftLower) {
-//                Motors.Lifter().SetPower(0);
-//            }
+            if (gamepad2.a) {
+                Motors.Lifter().SetPower(.6);
+            }
+
+            if (gamepad2.y) {
+                Motors.Lifter().SetPower(0);
+            }
+
+            if (gamepad2.b) {
+                Motors.Lifter().SetPower(-.6);
+            }
         }
     }
 }
