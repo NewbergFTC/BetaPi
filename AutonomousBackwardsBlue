@@ -8,6 +8,14 @@ import us.newberg.bulletproof.Motor;
 import us.newberg.bulletproof.lib.Motors;
 import us.newberg.bulletproof.math.Vector2f;
 
+import org.lasarobotics.vision.android.Cameras;
+import org.lasarobotics.vision.ftc.resq.Beacon;
+import org.lasarobotics.vision.opmode.LinearVisionOpMode;
+import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
+import org.lasarobotics.vision.util.ScreenOrientation;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+
 /**
  * Created by thesm_000 on 11/11/2016.
  */
@@ -15,33 +23,62 @@ import us.newberg.bulletproof.math.Vector2f;
 public class AutonomousBackwardsBlue extends BulletproofOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
+
+        waitForVisionStart();
+
+        setCamera(Cameras.SECONDARY);
+        setFrameSize(new Size(900, 900));
+
+        enableExtension(Extensions.BEACON);
+        enableExtension(Extensions.ROTATION);
+        enableExtension(Extensions.CAMERA_CONTROL);
+
+        beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+
+        beacon.setColorToleranceRed(0);
+        beacon.setColorToleranceBlue(-0.1);
+
+        rotation.setIsUsingSecondaryCamera(true);
+        rotation.disableAutoRotate();
+        rotation.setActivityOrientationFixed(ScreenOrientation.PORTRAIT);
+
+        cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
+        cameraControl.setAutoExposureCompensation();
+
         Init();
         waitForStart();
 
         while (opModeIsActive()) {
 
-            DriveBackwards(1200);
+ //           Danza.start();
+//            DriveBackwards(1200);
             DriveStop();
 
-            TurnCounterClockWise(1100);
+//            TurnCounterClockWise(1100);
             DriveStop();
 
+ //           Danza.stop();
+ //           DoIt.start();
             Shoot(-.5);
 
-            Collector(1550);
+            Collector(1050);
 
+ //           DoIt.start();
             Shoot(-.7);
 
+ //           Danza.start();
+
+            DriveForwards(300);
             TurnCounterClockWise(1150);
             DriveStop();
 
-            DriveBackwards(1550);
+            DriveBackwards(2350);//1550
             DriveStop();
 
             TurnClockWise(650);
             DriveStop();
 
-            TurnCounterClockWise(650);
+            TurnCounterClockWise(750);
             DriveStop();
 
             DriveBackwards(1750); //have if not doing beacon
@@ -81,6 +118,8 @@ public class AutonomousBackwardsBlue extends BulletproofOpMode {
 //            DriveStop();
 //            DriveLeft(500);
 //            DriveStop();
+
+//            Danza.stop();
             break;
         }
     }
