@@ -1,0 +1,156 @@
+package us.newberg.bulletproof.opmodes;
+
+import us.newberg.bulletproof.lib.Motors;
+
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtGyroSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtLightSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtUltrasonicSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+/**
+ * Created by never on 2/17/2017.
+ */
+@Autonomous(name = "Try1",group = "Common" )
+public class Try1 extends BulletproofOpMode{
+
+    HiTechnicNxtGyroSensor GyroSensor;
+    HiTechnicNxtUltrasonicSensor UltraSonic;
+    HiTechnicNxtColorSensor ColorSensor;
+    @Override
+    public void Init()
+    {
+        super.Init();
+        LightSensor = (HiTechnicNxtLightSensor) hardwareMap.lightSensor.get("LightSensor");
+        ColorSensor = (HiTechnicNxtColorSensor) hardwareMap.colorSensor.get("colorSensor");
+        GyroSensor = (HiTechnicNxtGyroSensor) hardwareMap.gyroSensor.get("GyroSensor");
+        UltraSonic = (HiTechnicNxtUltrasonicSensor) hardwareMap.ultrasonicSensor.get("ultrasonic");
+    }
+
+    @Override
+    public void runOpMode() throws InterruptedException
+    {
+        Init();
+
+        waitForStart();
+
+        //boolean bPrevState = false;
+        //boolean bCurrState = false;
+
+        boolean bLedOn = true;
+
+        int count = 0;
+
+        //bPrevState = bCurrState;
+
+
+        while(opModeIsActive()) {
+
+           // telemetry.addData("Led", bLedOn ? "On" : "Off");
+            telemetry.addData("Raw", LightSensor.getRawLightDetected());
+           // telemetry.addData("Normal", LightSensor.getLightDetected());
+           // telemetry.addData("Distance", ultrasonicSensor.getUltrasonicLevel());
+
+            LightSensor.enableLed(bLedOn);
+
+            telemetry.update();
+
+
+        while(opModeIsActive()) {
+            telemetry.addData("Read", LightSensor.getRawLightDetected());
+            //telemetry.addData("Distance", ultrasonicSensor.getUltrasonicLevel());
+
+            sleep(1000);
+            telemetry.addData("Read", LightSensor.getRawLightDetected());
+            //telemetry.addData("Distance", ultrasonicSensor.getUltrasonicLevel());
+
+            sleep(1000);
+            while (LightSensor.getRawLightDetected() <= 1.14){
+
+                sDriveDiagnalLeftn();
+
+                if(LightSensor.getRawLightDetected() >= 1.14){
+                    telemetry.addLine("Line Found");
+                    DriveStop(100);
+
+                }
+
+            }
+
+            while(LightSensor.getRawLightDetected() >= 1.15){
+                telemetry.addData("Data", UltraSonic.getUltrasonicLevel());
+                //sDriveForwardsN();
+                DriveStop(1000);
+                TurnCounterClockWise(400);
+                break;
+            }
+
+            while(UltraSonic.getUltrasonicLevel() >= 14){
+                telemetry.addData("Data", UltraSonic.getUltrasonicLevel());
+                DriveRightn();
+
+            }
+            while(UltraSonic.getUltrasonicLevel() <= 14){
+                DriveStop(100);
+                telemetry.addLine("Gottem");
+                break;
+            }
+            while(opModeIsActive()){
+
+                telemetry.addData("Blue", ColorSensor.blue());
+                telemetry.addData("Red", ColorSensor.red());
+                telemetry.addData("Color", ColorSensor.argb());
+
+            }
+            /*while(LightSensor.getRawLightDetected() <= 1.14 && count < 3 ){
+                     telemetry.addData("1st Loop Count", count);
+                     telemetry.addData("Light Data", LightSensor.getRawLightDetected());
+               //      telemetry.addData("Distance", ultrasonicSensor.getUltrasonicLevel());
+
+
+                     sDriveDiagnalRight(500);
+                     DriveStop(1000);
+
+                     count++;
+
+                     telemetry.update();
+                }
+
+                count = 0;
+
+                while(LightSensor.getRawLightDetected() <= 1.14 && count < 6){
+                    telemetry.addData("2nd Loop Count", count);
+                    telemetry.addData("Light Data", LightSensor.getRawLightDetected());
+            //        telemetry.addData("Distance", ultrasonicSensor.getUltrasonicLevel());
+
+                    sDriveDiagnalLeft(10000);
+                    DriveStop(1000);
+
+                    count++;
+
+                    telemetry.update();
+
+//                    if(ultrasonicSensor.getUltrasonicLevel() <= 60){
+//                        telemetry.addLine("Wall");
+//                        break;
+//                    }
+                    if(count >= 6){
+                        telemetry.addLine("No Line Found");
+
+                        break;
+                    }
+
+
+                }
+*/
+            }
+
+        }
+
+    }
+
+}
+
+
+
+
