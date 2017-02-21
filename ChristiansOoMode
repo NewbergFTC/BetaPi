@@ -1,0 +1,501 @@
+package us.newberg.bulletproof.opmodes;
+
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.view.View;
+import android.net.Uri;
+import android.content.Context;
+import org.lasarobotics.vision.android.Cameras;
+import org.lasarobotics.vision.ftc.resq.Beacon;
+import org.lasarobotics.vision.opmode.LinearVisionOpMode;
+import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
+import org.lasarobotics.vision.util.ScreenOrientation;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+
+//import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtLightSensor;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtUltrasonicSensor;
+
+//import us.newberg.bulletproof.lib.Servos;
+import org.lasarobotics.vision.opmode.LinearVisionOpMode;
+
+import java.io.File;
+
+import us.newberg.bulletproof.modules.DriveTrain;
+import us.newberg.bulletproof.lib.Motors;
+
+public  abstract class BulletproofOpMode extends LinearVisionOpMode
+{
+    public HiTechnicNxtLightSensor LightSensor;
+
+//    public HiTechnicNxtUltrasonicSensor ultrasonicSensor;
+//
+//    public MediaPlayer Darkness;
+//    public MediaPlayer Danza;
+//    public MediaPlayer DoIt;
+//    public MediaPlayer BestAround;
+//    public MediaPlayer HowWeDo;
+
+
+    //    public HiTechnicNxtColorSensor ColorSensor;
+    protected  DriveTrain _driveTrain;
+
+
+
+
+    public BulletproofOpMode()
+    {
+        super();
+        // NOTE(Garrison): Don't init any ftc objects here.
+
+        _driveTrain = null;
+    }
+
+    public void Init()
+    {
+//        Servos.Init(hardwareMap);
+
+        Motors.Init(hardwareMap);
+
+        LightSensor = (HiTechnicNxtLightSensor) hardwareMap.lightSensor.get("LightSensor");
+
+        //ColorSensor = (HiTechnicNxtColorSensor)hardwareMap.colorSensor.get("ColorSensor");
+
+        //ultrasonicSensor = (HiTechnicNxtUltrasonicSensor)hardwareMap.ultrasonicSensor.get("ultraSonicSensor");
+
+        _driveTrain = new DriveTrain(telemetry);
+
+//        Darkness = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/Darkness.mp3")));
+//        Darkness.setVolume(1, 1);
+//
+//        Danza = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/Danza.mp3")));
+//        Danza.setVolume(1, 1);
+//
+//        DoIt = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/DoIt.mp3")));
+//        DoIt.setVolume(1, 1);
+//
+//        BestAround = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/BestAround.mp3")));
+//        BestAround.setVolume(1, 1);
+//
+//        HowWeDo = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/HowWeDo.mp3")));
+//        HowWeDo.setVolume(1, 1);
+//
+//        DoIt.start();
+//        Darkness.start();
+//        Danza.start();
+//        BestAround.start();
+//        HowWeDo.start();
+//        DoIt.stop();
+//        Darkness.stop();
+//        Danza.stop();
+//        BestAround.stop();
+//        HowWeDo.stop();
+    }
+
+//    public void runOpMode() throws InterruptedException {
+//        waitForVisionStart();
+//
+//        setCamera(Cameras.SECONDARY);
+//        setFrameSize(new Size(900, 900));
+//
+//        enableExtension(Extensions.BEACON);
+//        enableExtension(Extensions.ROTATION);
+//        enableExtension(Extensions.CAMERA_CONTROL);
+//
+//        beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+//
+//        beacon.setColorToleranceRed(0);
+//        beacon.setColorToleranceBlue(-0.3);
+//
+//        rotation.setIsUsingSecondaryCamera(true);
+//        rotation.disableAutoRotate();
+//        rotation.setActivityOrientationFixed(ScreenOrientation.PORTRAIT);
+//
+//        cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
+//        cameraControl.setAutoExposureCompensation();
+//
+//        Init();
+//
+//        waitForStart();
+//
+//    }
+
+    public boolean lightSensor(HiTechnicNxtLightSensor lightSensor)
+    {
+        lightSensor.enableLed(true);
+
+        double LightSensorDataRaw = lightSensor.getRawLightDetected();
+        telemetry.addData("lightsensorvalue",lightSensor.getRawLightDetected());
+        while (lightSensor.getRawLightDetected() < 1.7)
+        {
+            telemetry.addData("lightsensorvalue",lightSensor.getRawLightDetected());
+            LightSensorDataRaw = lightSensor.getRawLightDetected();
+            Motors.FrontRight.setPower(0.5);
+            Motors.FrontLeft.setPower(-0.5);
+            Motors.BackRight.setPower(0.5);
+            Motors.BackLeft.setPower(-0.5);
+
+            if (!opModeIsActive())
+                return true;
+
+            telemetry.update();
+        }
+        Motors.FrontRight.setPower(0);
+        Motors.FrontLeft.setPower(0);
+        Motors.BackRight.setPower(0);
+        Motors.BackLeft.setPower(0);
+        return false;
+    }
+
+    public void DriveBackwards (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(0.5);
+        Motors.FrontLeft.setPower(-0.5);
+        Motors.BackRight.setPower(0.5);
+        Motors.BackLeft.setPower(-0.5);
+        sleep(time);
+
+    }
+
+    public void DriveForwards (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(-0.5);
+        Motors.FrontLeft.setPower(0.5);
+        Motors.BackRight.setPower(-0.5);
+        Motors.BackLeft.setPower(0.5);
+        sleep(time);
+
+    }
+
+    public void DriveForwardsN () throws InterruptedException{
+        Motors.FrontRight.setPower(-0.5);
+        Motors.FrontLeft.setPower(0.5);
+        Motors.BackRight.setPower(-0.5);
+        Motors.BackLeft.setPower(0.5);
+
+    }
+
+    public void sDriveForwardsN () throws InterruptedException{
+        Motors.FrontRight.setPower(-0.3);
+        Motors.FrontLeft.setPower(0.3);
+        Motors.BackRight.setPower(-0.3);
+        Motors.BackLeft.setPower(0.3);
+
+    }
+
+    public void sDriveForwards (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(-0.3);
+        Motors.FrontLeft.setPower(0.3);
+        Motors.BackRight.setPower(-0.3);
+        Motors.BackLeft.setPower(0.3);
+        sleep(time);
+    }
+    public void sDriveDiagnalLeft (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(-0.3);
+        Motors.FrontLeft.setPower(0);
+        Motors.BackRight.setPower(0);
+        Motors.BackLeft.setPower(0.3);
+        sleep(time);
+    }
+    public void sDriveDiagnalLeftn () throws InterruptedException{
+        Motors.FrontRight.setPower(-0.3);
+        Motors.FrontLeft.setPower(0);
+        Motors.BackRight.setPower(0);
+        Motors.BackLeft.setPower(0.3);
+    }
+    public void sDriveDiagnalRight (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(0);
+        Motors.FrontLeft.setPower(0.3);
+        Motors.BackRight.setPower(-0.3);
+        Motors.BackLeft.setPower(0);
+        sleep(time);
+    }
+    public void DriveLeft (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(-.5);
+        Motors.FrontLeft.setPower(-.5);
+        Motors.BackRight.setPower(.5);
+        Motors.BackLeft.setPower(.5);
+        sleep(time);
+
+    }
+    public void DriveLeftN () throws InterruptedException{
+        Motors.FrontRight.setPower(-.5);
+        Motors.FrontLeft.setPower(-.5);
+        Motors.BackRight.setPower(.5);
+        Motors.BackLeft.setPower(.5);
+    }
+    public void sDriveLeft (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(-.2);
+        Motors.FrontLeft.setPower(-.2);
+        Motors.BackRight.setPower(.2);
+        Motors.BackLeft.setPower(.2);
+        sleep(time);
+
+    }
+    public void DriveRight (int time) throws InterruptedException{
+    Motors.FrontRight.setPower(.5);
+    Motors.FrontLeft.setPower(.5);
+    Motors.BackRight.setPower(-.5);
+    Motors.BackLeft.setPower(-.5);
+    sleep(time);
+
+    }
+    public void sDriveRight (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(.2);
+        Motors.FrontLeft.setPower(.2);
+        Motors.BackRight.setPower(-.2);
+        Motors.BackLeft.setPower(-.2);
+        sleep(time);
+
+    }
+    public void DriveRightn () throws InterruptedException{
+        Motors.FrontRight.setPower(.25);
+        Motors.FrontLeft.setPower(.25);
+        Motors.BackRight.setPower(-.25);
+        Motors.BackLeft.setPower(-.25);
+
+    }
+
+
+    public void TurnClockWise (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(0.5);
+        Motors.FrontLeft.setPower(0.5);
+        Motors.BackRight.setPower(0.5);
+        Motors.BackLeft.setPower(0.5);
+        sleep(time);
+
+    }
+
+    public void TurnCounterClockWise (int time) throws InterruptedException{
+        Motors.FrontRight.setPower(-0.5);
+        Motors.FrontLeft.setPower(-0.5);
+        Motors.BackRight.setPower(-0.5);
+        Motors.BackLeft.setPower(-0.5);
+        sleep(time);
+
+    }
+
+    public void TurnCounterClockWiseN () throws InterruptedException{
+        Motors.FrontRight.setPower(-0.5);
+        Motors.FrontLeft.setPower(-0.5);
+        Motors.BackRight.setPower(-0.5);
+        Motors.BackLeft.setPower(-0.5);
+
+
+    }
+
+    public void Shoot (double power) throws InterruptedException{
+        Motors.Flipper.setPower(power);
+        sleep(850);
+        Motors.Flipper.setPower(0);
+        sleep(250);
+        Motors.Flipper.setPower(.3);
+        sleep(1100);
+        Motors.Flipper.setPower(0);
+
+    }
+
+    public void DriveStop (int time) throws InterruptedException{
+        Motors.BackLeft.setPower(0);
+        Motors.FrontLeft.setPower(0);
+        Motors.BackRight.setPower(0);
+        Motors.FrontRight.setPower(0);
+        sleep(time);
+    }
+
+    public void Collector (int time) throws InterruptedException{
+        Motors.Collector.setPower(.25);
+        sleep(time);
+        Motors.Collector.setPower(0);
+        sleep(2000);
+    }
+    public void Collectorn () throws InterruptedException{
+        Motors.Collector.setPower(.25);
+    }
+    public void CollectorStop() throws InterruptedException{
+        Motors.Collector.setPower(0);
+    }
+
+    public void DiagnalLeft(int time) throws InterruptedException{
+        Motors.FrontRight.setPower(-0.5);
+        Motors.FrontLeft.setPower(0.3);
+        Motors.BackRight.setPower(-0.3);
+        Motors.BackLeft.setPower(0.5);
+        sleep(time);
+    }
+
+
+    public void colorSensor() throws InterruptedException {
+
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F,0F,0F};
+
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
+
+        // get a reference to the tiRelaveLayout so we can change the background
+        // color of the Robot Controller app to match the hue detected by the RGB sensor.
+        final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(com.qualcomm.ftcrobotcontroller.R.id.RelativeLayout);
+
+        // bPrevState and bCurrState represent the previous and current state of the button.
+        boolean bPrevState = false;
+        boolean bCurrState = false;
+
+        // bLedOn represents the state of the LED.
+        boolean bLedOn = true;
+
+        float color = 0;
+//        boolean redSide = false;
+//        boolean blueSide = false;
+
+        // get a reference to our ColorSensor object.
+//        colorSensor = (HiTechnicNxtColorSensor)hardwareMap.colorSensor.get("color sensor");
+
+        // turn the LED on in the beginning, just so user will know that the sensor is active.
+        // ColorSensor.enableLed(bLedOn);
+
+        // wait for the start button to be pressed.
+
+
+        // loop and read the RGB data.
+        // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
+//        while (opModeIsActive())  {
+
+        // check the status of the x button on either gamepad.
+ //       bCurrState = gamepad1.x;
+
+        // check for button state transitions.
+//            if ((bCurrState == true) && (bCurrState != bPrevState))  {
+//
+//                // button is transitioning to a pressed state.  Toggle LED.
+//                // on button press, enable the LED.
+//                bLedOn = !bLedOn;
+//                ColorSensor.enableLed(bLedOn);
+//            }
+//
+//            // update previous state variable.
+//            bPrevState = bCurrState;
+//
+//            // convert the RGB values to HSV values.
+//            Color.RGBToHSV(ColorSensor.red(), ColorSensor.green(), ColorSensor.blue(), hsvValues);
+//
+//            // send the info back to driver station using telemetry function.
+//            telemetry.addData("LED", bLedOn ? "On" : "Off");
+//            telemetry.addData("Clear", ColorSensor.alpha());
+//            telemetry.addData("Red  ", ColorSensor.red());
+//            telemetry.addData("Green", ColorSensor.green());
+//            telemetry.addData("Blue ", ColorSensor.blue());
+//            telemetry.addData("Hue", hsvValues[0]);
+//        telemetry.update();
+//            // change the background color to match the color detected by the RGB sensor.
+//            // pass a reference to the hue, saturation, and value array as an argument
+//            // to the HSVToColor method.
+//            if (ColorSensor.green() > 125){
+//                color = 2;  //2 is red
+//
+//            }
+//            else{
+//                color = 1; // 1 is blue
+//            }
+//            if  (color == 2){    //this is for blue side and testing left side
+//                //this is if red is the left most color
+//                //rotate left
+////                Motors.FrontRight.setPower(-.5);
+////                Motors.FrontLeft.setPower(-.5);
+////                Motors.BackRight.setPower(-.5);
+////                Motors.BackLeft.setPower(-.5);
+////                sleep( 250);
+////                Motors.FrontRight.setPower(0);
+////                Motors.FrontLeft.setPower(0);
+////                Motors.BackRight.setPower(0);
+////                Motors.BackLeft.setPower(0);
+////                sleep(2000);
+//
+//                //left
+////                Motors.FrontRight.setPower(-.5);
+////                Motors.FrontLeft.setPower(.5);
+////                Motors.BackRight.setPower(-.5);
+////                Motors.BackLeft.setPower(.5);
+////                sleep(150);
+////                Motors.FrontRight.setPower(0);
+////                Motors.FrontLeft.setPower(0);
+////                Motors.BackRight.setPower(0);
+////                Motors.BackLeft.setPower(0);
+//
+////                Motors.FrontRight.setPower(.5);
+////                Motors.FrontLeft.setPower(-.5);
+////                Motors.BackRight.setPower(.5);
+////                Motors.BackLeft.setPower(-.5);
+////                sleep( 2000);
+////                Motors.FrontRight.setPower(0);
+////                Motors.FrontLeft.setPower(0);
+////                Motors.BackRight.setPower(0);
+////                Motors.BackLeft.setPower(0);
+//
+//                //move backward, which seems like right
+//
+//                Motors.FrontRight.setPower(.5);
+//                Motors.FrontLeft.setPower(-.5);
+//                Motors.BackRight.setPower(.5);
+//                Motors.BackLeft.setPower(-.5);
+//                sleep( 700);
+//                Motors.FrontRight.setPower(0);
+//                Motors.FrontLeft.setPower(0);
+//                Motors.BackRight.setPower(0);
+//                Motors.BackLeft.setPower(0);
+//                sleep(3000);
+//
+//                return;
+//
+//            }
+//            if (color == 1){
+//                //this is if blue is the left most color
+//                //rotate left
+////                Motors.FrontRight.setPower(-.5);
+////                Motors.FrontLeft.setPower(-.5);
+////                Motors.BackRight.setPower(-.5);
+////                Motors.BackLeft.setPower(-.5);
+////                sleep( 250);
+////                Motors.FrontRight.setPower(0);
+////                Motors.FrontLeft.setPower(0);
+////                Motors.BackRight.setPower(0);
+////                Motors.BackLeft.setPower(0);
+////                sleep(2000);
+//
+//                //move forward, which seems like left
+//                Motors.FrontRight.setPower(-.5);
+//                Motors.FrontLeft.setPower(.5);
+//                Motors.BackRight.setPower(-.5);
+//                Motors.BackLeft.setPower(.5);
+//                sleep( 700);
+//                Motors.FrontRight.setPower(0);
+//                Motors.FrontLeft.setPower(0);
+//                Motors.BackRight.setPower(0);
+//                Motors.BackLeft.setPower(0);
+//                sleep(3000);
+//
+//                return;
+    }
+
+//            relativeLayout.post(new Runnable() {
+//                public void run() {
+//                    relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
+//                }
+//            });
+//
+//            telemetry.update();
+    //idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+}
+//}
+
+
+
+
+//}
