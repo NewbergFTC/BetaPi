@@ -14,8 +14,9 @@ import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
 import org.lasarobotics.vision.util.ScreenOrientation;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
-
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 //import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtGyroSensor;
 import com.qualcomm.hardware.hitechnic.HiTechnicNxtLightSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -32,12 +33,17 @@ import java.io.File;
 
 import us.newberg.bulletproof.DriveTrain;
 import us.newberg.bulletproof.lib.Motors;
+import us.newberg.bulletproof.lib.Servos;
 
 public  abstract class BulletproofOpMode extends LinearVisionOpMode
 {
     public HiTechnicNxtLightSensor LightSensor;
 
+    public HiTechnicNxtGyroSensor GyroSensor;
+
     public HiTechnicNxtUltrasonicSensor ultrasonicSensor;
+
+
 
     public MediaPlayer Darkness;
     public MediaPlayer Danza;
@@ -62,17 +68,17 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
 
     public void Init()
     {
-//        Servos.Init(hardwareMap);
+        Servos.Init(hardwareMap);
 
         Motors.Init(hardwareMap);
 
         LightSensor = (HiTechnicNxtLightSensor) hardwareMap.lightSensor.get("LightSensor");
-
+        GyroSensor = (HiTechnicNxtGyroSensor) hardwareMap.gyroSensor.get("GyroSensor") ;
         //ColorSensor = (HiTechnicNxtColorSensor)hardwareMap.colorSensor.get("ColorSensor");
-
         //ultrasonicSensor = (HiTechnicNxtUltrasonicSensor)hardwareMap.ultrasonicSensor.get("ultraSonicSensor");
 
         _driveTrain = new DriveTrain(telemetry);
+
 
 //        Darkness = MediaPlayer.create(hardwareMap.appContext, Uri.fromFile(new File("/mnt/sdcard/Darkness.mp3")));
 //        Darkness.setVolume(1, 1);
@@ -129,21 +135,18 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
 //
 //    }
 
-    public boolean lightSensor(HiTechnicNxtLightSensor lightSensor)
-    {
+    public boolean lightSensor(HiTechnicNxtLightSensor lightSensor) {
         lightSensor.enableLed(true);
 
         double LightSensorDataRaw = lightSensor.getRawLightDetected();
-        telemetry.addData("lightsensorvalue",lightSensor.getRawLightDetected());
-        while (lightSensor.getRawLightDetected() < 1.7)
-        {
-            telemetry.addData("lightsensorvalue",lightSensor.getRawLightDetected());
+        telemetry.addData("lightsensorvalue", lightSensor.getRawLightDetected());
+        while (LightSensorDataRaw < 1.19) {
+            telemetry.addData("lightsensorvalue", lightSensor.getRawLightDetected());
             LightSensorDataRaw = lightSensor.getRawLightDetected();
-            Motors.FrontRight().SetPower(0.5);
-            Motors.FrontLeft().SetPower(-0.5);
-            Motors.BackRight().SetPower(0.5);
-            Motors.BackLeft().SetPower(-0.5);
-
+            Motors.FrontRight().SetPower(-0);
+            Motors.FrontLeft().SetPower(1);
+            Motors.BackRight().SetPower(-.7);
+            Motors.BackLeft().SetPower(0);
             if (!opModeIsActive())
                 return true;
 
@@ -156,6 +159,12 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
         return false;
     }
 
+    public void LiftSet() throws InterruptedException{
+        Motors.Lifter().SetPower(.2);
+        sleep(50);
+        Motors.Lifter().SetPower(0);
+    }
+
     public void DriveBackwards (int time) throws InterruptedException{
         Motors.FrontRight().SetPower(0.5);
         Motors.FrontLeft().SetPower(-0.5);
@@ -165,13 +174,105 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
 
     }
 
+    public void DriveForwardsGyro (int time) throws InterruptedException{
+        double timer = getRuntime();
+        double targetTime = timer + time;
+        while(timer < targetTime ) {
+            telemetry.addData("Turn", GyroSensor.getRotationFraction());
+            telemetry.update();
+            double firstGyro = GyroSensor.getRotationFraction();
+            double FR = .54 < firstGyro && firstGyro < .60 ? -0.4 : firstGyro < .54 ? -.4 : -.5;
+            double FL = .54 < firstGyro && firstGyro < .60 ? 0.6 : firstGyro < .54 ? .6 : .5;
+            double BR = .54 < firstGyro && firstGyro < .60 ? -0.5 : firstGyro < .54 ? -.4 : -.6;
+            double BL = .54 < firstGyro && firstGyro < .60 ? 0.6 : firstGyro < .54 ? .6 : .5;
+            Motors.FrontRight().SetPower(FR);
+            Motors.FrontLeft().SetPower(FL);
+            Motors.BackRight().SetPower(BR);
+            Motors.BackLeft().SetPower(BL);
+            telemetry.addData("Turn", GyroSensor.getRotationFraction());
+            telemetry.update();
+            sleep(50);
+            timer = getRuntime();
+        }
+        DriveStop();
+    }
+
+    public void DriveBackwardsGyro (int time) throws InterruptedException{
+        double timer = getRuntime();
+        double targetTime = timer + time;
+        while(timer < targetTime ) {
+            telemetry.addData("Turn", GyroSensor.getRotationFraction());
+            telemetry.update();
+            double firstGyro = GyroSensor.getRotationFraction();
+            double FR = .54 < firstGyro && firstGyro < .60 ? 0.5 : firstGyro < .54 ? .6 : .4;
+            double FL = .54 < firstGyro && firstGyro < .60 ? -0.5 : firstGyro < .54 ? -.4 : -.6;
+            double BR = .54 < firstGyro && firstGyro < .60 ? 0.5 : firstGyro < .54 ? .6 : .4;
+            double BL = .54 < firstGyro && firstGyro < .60 ? -0.5 : firstGyro < .54 ? -.4 : -.6;
+            Motors.FrontRight().SetPower(FR);
+            Motors.FrontLeft().SetPower(FL);
+            Motors.BackRight().SetPower(BR);
+            Motors.BackLeft().SetPower(BL);
+            telemetry.addData("Turn", GyroSensor.getRotationFraction());
+            telemetry.update();
+            sleep(50);
+            timer = getRuntime();
+        }
+        DriveStop();
+    }
+
+
+    public void DriveLeftGyro (int time) throws InterruptedException{
+        double timer = getRuntime();
+        double targetTime = timer + time;
+        while(timer < targetTime ) {
+            telemetry.addData("Turn", GyroSensor.getRotationFraction());
+            telemetry.update();
+            double firstGyro = GyroSensor.getRotationFraction();
+            double FR = .54 < firstGyro && firstGyro < .60 ? -0.7 : firstGyro < .54 ? -.4 : -.6;
+            double FL = .54 < firstGyro && firstGyro < .60 ? -0.7 : firstGyro < .54 ? -.4 : -.6;
+            double BR = .54 < firstGyro && firstGyro < .60 ? 0.5 : firstGyro < .54 ? .6 : .4;
+            double BL = .54 < firstGyro && firstGyro < .60 ? 0.5 : firstGyro < .54 ? .6 : .4;
+            Motors.FrontRight().SetPower(FR);
+            Motors.FrontLeft().SetPower(FL);
+            Motors.BackRight().SetPower(BR);
+            Motors.BackLeft().SetPower(BL);
+            telemetry.addData("Turn", GyroSensor.getRotationFraction());
+            telemetry.update();
+            sleep(50);
+            timer = getRuntime();
+        }
+        DriveStop();
+    }
+
+    public void DriveRightGyro (int time) throws InterruptedException{
+        double timer = getRuntime();
+        double targetTime = timer + time;
+        while(timer < targetTime ) {
+            telemetry.addData("Turn", GyroSensor.getRotationFraction());
+            telemetry.update();
+            double firstGyro = GyroSensor.getRotationFraction();
+            double FR = .54 < firstGyro && firstGyro < .60 ? 0.6 : firstGyro < .54 ? .6 : .4;
+            double FL = .54 < firstGyro && firstGyro < .60 ? 0.6 : firstGyro < .54 ? .6 : .4;
+            double BR = .54 < firstGyro && firstGyro < .60 ? -0.4 : firstGyro < .54 ? -.4 : -.6;
+            double BL = .54 < firstGyro && firstGyro < .60 ? -0.4 : firstGyro < .54 ? -.3 : -.6;
+            Motors.FrontRight().SetPower(FR);
+            Motors.FrontLeft().SetPower(FL);
+            Motors.BackRight().SetPower(BR);
+            Motors.BackLeft().SetPower(BL);
+            telemetry.addData("Turn", GyroSensor.getRotationFraction());
+            telemetry.update();
+            sleep(50);
+            timer = getRuntime();
+        }
+        DriveStop();
+    }
+
     public void DriveForwards (int time) throws InterruptedException{
         Motors.FrontRight().SetPower(-0.5);
-        Motors.FrontLeft().SetPower(0.5);
+        Motors.FrontLeft().SetPower(0.6);
         Motors.BackRight().SetPower(-0.5);
-        Motors.BackLeft().SetPower(0.5);
+        Motors.BackLeft().SetPower(0.8);
         sleep(time);
-
     }
 
     public void DriveLeft (int time) throws InterruptedException{
@@ -179,6 +280,42 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
         Motors.FrontLeft().SetPower(-.5);
         Motors.BackRight().SetPower(.5);
         Motors.BackLeft().SetPower(.5);
+        sleep(time);
+
+    }
+
+    public void DriveLeftForward (int time) throws InterruptedException{
+        Motors.FrontRight().SetPower(-.5);
+        Motors.FrontLeft().SetPower(0);
+        Motors.BackRight().SetPower(0);
+        Motors.BackLeft().SetPower(.5);
+        sleep(time);
+
+    }
+
+    public void DriveLeftBackwards (int time) throws InterruptedException{
+        Motors.FrontRight().SetPower(-0);
+        Motors.FrontLeft().SetPower(-.5);
+        Motors.BackRight().SetPower(.5);
+        Motors.BackLeft().SetPower(0);
+        sleep(time);
+
+    }
+
+    public void DriveRightForwards (int time) throws InterruptedException{
+        Motors.FrontRight().SetPower(-0);
+        Motors.FrontLeft().SetPower(1);
+        Motors.BackRight().SetPower(-.7);
+        Motors.BackLeft().SetPower(0);
+        sleep(time);
+
+    }
+
+    public void DriveRightBackwards (int time) throws InterruptedException{
+        Motors.FrontRight().SetPower(.5);
+        Motors.FrontLeft().SetPower(-0);
+        Motors.BackRight().SetPower(.0);
+        Motors.BackLeft().SetPower(-.5);
         sleep(time);
 
     }
@@ -212,11 +349,11 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
 
     public void Shoot (double power) throws InterruptedException{
         Motors.Flipper().SetPower(power);
-        sleep(850);
+        sleep(750);
         Motors.Flipper().SetPower(0);
         sleep(250);
         Motors.Flipper().SetPower(.3);
-        sleep(1100);
+        sleep(1250);
         Motors.Flipper().SetPower(0);
 
     }
@@ -229,10 +366,70 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
     }
 
     public void Collector (int time) throws InterruptedException{
-        Motors.Collector().SetPower(.25);
+        Motors.Collector().SetPower(.6);
         sleep(time);
         Motors.Collector().SetPower(0);
         sleep(2000);
+    }
+
+//    public void BallSteal () throws InterruptedException{
+//        Motors.ballSteal().SetPower(.2);
+//        sleep(1000);
+//        Motors.ballSteal().SetPower(0);
+//        sleep(100);
+//        Motors.ballSteal().SetPower(-.075);
+//        sleep(1300);
+//        Motors.ballSteal().SetPower(0);
+//    }
+
+    public boolean lineFollow(HiTechnicNxtLightSensor lightSensor) throws InterruptedException {
+        lightSensor.enableLed(true);
+
+        double LightSensorDataRaw = lightSensor.getRawLightDetected();
+        telemetry.addData("lightsensorvalue",lightSensor.getRawLightDetected());
+        int peepee = 200;
+        int clockwisecheck = 0;
+        int counterclockwisecheck = 0;
+
+        if (peepee == 200) {
+            while (lightSensor.getRawLightDetected() > 1.2) {
+                clockwisecheck = 0;
+                counterclockwisecheck = 0;
+
+                telemetry.addData("lightsensorvalue", lightSensor.getRawLightDetected());
+                LightSensorDataRaw = lightSensor.getRawLightDetected();
+                Motors.FrontRight().SetPower(.5);
+                Motors.FrontLeft().SetPower(.5);
+                Motors.BackRight().SetPower(-.5);
+                Motors.BackLeft().SetPower(-.5);
+
+                if (!opModeIsActive())
+                    return true;
+
+                telemetry.update();
+            }
+            while (lightSensor.getRawLightDetected() < 1.2 && clockwisecheck == 0) {
+                DriveStop();
+                sleep(200);
+                TurnClockWise(200);
+                clockwisecheck = 1;
+                DriveStop();
+                telemetry.addData("lightsensorvalue", lightSensor.getRawLightDetected());
+                LightSensorDataRaw = lightSensor.getRawLightDetected();
+                telemetry.update();
+            }
+            while (lightSensor.getRawLightDetected() < 1.2 && counterclockwisecheck == 0 ){
+                DriveStop();
+                sleep(200);
+                TurnCounterClockWise(400);
+                counterclockwisecheck = 1;
+                DriveStop();
+                telemetry.addData("lightsensorvalue", lightSensor.getRawLightDetected());
+                LightSensorDataRaw = lightSensor.getRawLightDetected();
+                telemetry.update();
+            }
+        }
+        return false;
     }
 
     public void colorSensor() throws InterruptedException {
