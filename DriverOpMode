@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import us.newberg.bulletproof.Motor;
 import us.newberg.bulletproof.lib.Motors;
-//import us.newberg.bulletproof.lib.Servos;
+import us.newberg.bulletproof.lib.Servos;
 import us.newberg.bulletproof.math.Vector2f;
 
 
@@ -34,6 +34,11 @@ public class DriverOpMode extends BulletproofOpMode
 
         double startTime = getRuntime();
         double collectorCooldown = 0;
+
+        double liftUnlockL = .3;
+        double liftLockedL = 1;
+        double liftUnlockR = 1;
+        double liftLockedR = 0;
 
         while(opModeIsActive()) {
             final double currentTime = getRuntime();
@@ -170,6 +175,112 @@ public class DriverOpMode extends BulletproofOpMode
                     break;
             }
 
+
+
+
+            switch (gamepadOneLeftAngleQuad) {
+                case 1:
+                    if (gamepadOneLeftAngle >= 70 && gamepad1.right_stick_button) {
+                        // Forward
+                        leftDrivePower.y = powerY/3;
+                        leftDrivePower.x = powerY/3;
+
+                        rightDrivePower.y = -powerY/3;
+                        rightDrivePower.x = -powerY/3;
+                    } else if ((gamepadOneLeftAngle > 30) && gamepadOneLeftAngle < 70 && gamepad1.right_stick_button) {
+                        // Forward Right
+                        leftDrivePower.x = powerY/3;
+                        leftDrivePower.y = 0;
+
+                        rightDrivePower.x = 0;
+                        rightDrivePower.y = -powerY/3;
+                    } else if (gamepadOneLeftAngle <= 30 && gamepad1.right_stick_button) {
+                        // Right
+                        leftDrivePower.x = powerX/3;
+                        leftDrivePower.y = -powerX/3;
+
+                        rightDrivePower.x = powerX/3;
+                        rightDrivePower.y = -powerX/3;
+                    }
+                    break;
+                case 2:
+                    if (gamepadOneLeftAngle >= 70 && gamepad1.right_stick_button) {
+                        // Forward
+                        leftDrivePower.y = powerY/3;
+                        leftDrivePower.x = powerY/3;
+
+                        rightDrivePower.y = -powerY/3;
+                        rightDrivePower.x = -powerY/3;
+                    } else if (gamepadOneLeftAngle < 70 && gamepadOneLeftAngle > 30 && gamepad1.right_stick_button) {
+                        // Forward Left
+                        leftDrivePower.x = 0;
+                        leftDrivePower.y = powerY/3;
+
+                        rightDrivePower.x = -powerY/3;
+                        rightDrivePower.y = 0;
+                    } else if (gamepadOneLeftAngle <= 30 && gamepad1.right_stick_button) {
+                        // Left
+                        leftDrivePower.x = -powerX/3;
+                        leftDrivePower.y = powerX/3;
+
+                        rightDrivePower.x = -powerX/3;
+                        rightDrivePower.y = powerX/3;
+                    }
+                    break;
+                case 3:
+                    if (gamepadOneLeftAngle <= 30 && gamepad1.right_stick_button) {
+                        // Left
+                        leftDrivePower.x = -powerX/3;
+                        leftDrivePower.y = powerX/3;
+
+                        rightDrivePower.x = -powerX/3;
+                        rightDrivePower.y = powerX/3;
+                    } else if (gamepadOneLeftAngle > 30 && gamepadOneLeftAngle < 70 && gamepad1.right_stick_button) {
+                        // Back Left
+                        leftDrivePower.x = -powerY/3;
+                        leftDrivePower.y = 0;
+
+                        rightDrivePower.x = 0;
+                        rightDrivePower.y = powerY/3;
+                    } else if (gamepadOneLeftAngle >= 70 && gamepad1.right_stick_button) {
+                        // Back
+                        leftDrivePower.y = -powerY/3;
+                        leftDrivePower.x = -powerY/3;
+
+                        rightDrivePower.y = powerY/3;
+                        rightDrivePower.x = powerY/3;
+                    }
+                    break;
+                case 4:
+                    if (gamepadOneLeftAngle <= 30 && gamepad1.right_stick_button) {
+                        // Right
+                        leftDrivePower.x = powerX/3;
+                        leftDrivePower.y = -powerX/3;
+
+                        rightDrivePower.x = powerX/3;
+                        rightDrivePower.y = -powerX/3;
+                    } else if (gamepadOneLeftAngle > 30 && gamepadOneLeftAngle < 70 && gamepad1.right_stick_button) {
+                        // Back Right
+                        leftDrivePower.x = 0;
+                        leftDrivePower.y = -powerY/3;
+
+                        rightDrivePower.x = powerY/3;
+                        rightDrivePower.y = 0;
+                    } else if (gamepadOneLeftAngle >= 70 && gamepad1.right_stick_button) {
+                        // Back
+                        leftDrivePower.y = -powerY/3;
+                        leftDrivePower.x = -powerY/3;
+
+                        rightDrivePower.y = powerY/3;
+                        rightDrivePower.x = powerY/3;
+                    }
+                    break;
+            }
+
+
+
+
+
             powerX = gamepadOneRight.x;
 
 
@@ -181,30 +292,43 @@ public class DriverOpMode extends BulletproofOpMode
                 rightDrivePower.x = powerX/3 ;
                 rightDrivePower.y = powerX/3 ;
             }
-            
+
 
 
             _driveTrain.Drive(leftDrivePower, rightDrivePower);
             telemetry.addData("Left angle and quad", "%f, %d", gamepadOneLeftAngle, gamepadOneLeftAngleQuad);
             _driveTrain.UpdateTelemetry();
 
-            final float COLLECTOR_POWER = 0.35f;
+            final float COLLECTOR_POWER = 0.9f;
+            final float SLOW_COLLECTOR_POWER = 0.15f;
+            final float Backwards_Collector_Power = -0.35f;
+            final float Slow_Backwards_Collector_Power = -0.15f;
             final float Flipper_Power = -1f;
-            boolean buttonCollectorToggle = gamepad1.a;
+            //boolean buttonCollectorToggle = gamepad1.a;
             boolean buttonshoot = gamepad1.b;
             boolean buttonflipperback = gamepad1.y;
             boolean collectorCooldownComplete = getRuntime() > collectorCooldown;
 
-            if (buttonCollectorToggle && collectorCooldownComplete) {
-                collectorToggle = !collectorToggle;
+//            if (buttonCollectorToggle && collectorCooldownComplete) {
+//                collectorToggle = !collectorToggle;
+//
+//                collectorCooldown = getRuntime() + 0.3;
+//            }
 
-                collectorCooldown = getRuntime() + 0.3;
+            if (gamepad1.a && gamepad1.dpad_up) {
+                Motors.Collector().SetPower(SLOW_COLLECTOR_POWER);
+            }else if (gamepad1.a){
+                Motors.Collector().SetPower(COLLECTOR_POWER);
             }
 
-            if (collectorToggle) {
-                Motors.Collector().SetPower(COLLECTOR_POWER);
-            } else {
+            if (gamepad1.left_bumper) {
                 Motors.Collector().SetPower(0);
+            }
+
+            if (gamepad1.right_bumper && gamepad1.dpad_up) {
+                Motors.Collector().SetPower(Slow_Backwards_Collector_Power);
+            }else if (gamepad1.right_bumper){
+                Motors.Collector().SetPower(Backwards_Collector_Power);
             }
 
             if (buttonshoot) {
@@ -221,16 +345,26 @@ public class DriverOpMode extends BulletproofOpMode
             }
             if (gamepad1.x) {
                 Motors.Flipper().SetPower(-.7);
-                sleep(800);
+                sleep(700);
                 Motors.Flipper().SetPower(0);
                 sleep(200);
                 Motors.Flipper().SetPower(.3);
-                sleep(1150);
+                sleep(1300);
                 Motors.Flipper().SetPower(0);
             }
 
             telemetry.addData("Collector", collectorToggle);
             telemetry.update();
+
+//            if (gamepad2.dpad_down) {
+//                Motors.ballSteal().SetPower(-.075);
+//            }
+//            if (gamepad2.dpad_right){
+//                Motors.ballSteal().SetPower(0);
+//            }
+//            if (gamepad2.dpad_up){
+//                Motors.ballSteal().SetPower(.2);
+//            }
 
 //            if (gamepad1.dpad_up) {
 //                DoIt.stop();
@@ -243,9 +377,7 @@ public class DriverOpMode extends BulletproofOpMode
 //                DoIt.start();
 //            }
 //
-//            if (gamepad1.dpad_down) {
-//                DoIt.stop();
-//                Darkness.stop();
+//            if (gamepad1.right_stick_button) {
 //                Danza.stop();
 //                BestAround.stop();
 //                HowWeDo.stop();
@@ -291,29 +423,31 @@ public class DriverOpMode extends BulletproofOpMode
             //idle();
 
 
-//            double capHolderUp = 1;
-//            double capHolderDown = .5;
-//
-//            boolean capHoldDown = gamepad2.x;
-//            if (capHoldDown) {
-//                Servos.CapHolder.setPosition(capHolderDown);
-//            }
-//
-//            boolean capHoldUp = gamepad2.y;
-//            if (capHoldUp) {
-//                Servos.CapHolder.setPosition(capHolderUp);
-//            }
-//
+
+
+            if (gamepad2.dpad_down) {
+                Servos.liftLockL.setPosition(liftUnlockL);
+                Servos.liftLockR.setPosition(liftUnlockR);
+            }
+
+            if (gamepad2.dpad_up) {
+                Servos.liftLockL.setPosition(liftLockedL);
+                Servos.liftLockR.setPosition(liftLockedR);
+            }
+
             if (gamepad2.a) {
-                Motors.Lifter().SetPower(.6);
+                Motors.Lifter().SetPower(1);
+                Motors.twoLifter().SetPower(-1);
             }
 
             if (gamepad2.y) {
                 Motors.Lifter().SetPower(0);
+                Motors.twoLifter().SetPower(0);
             }
 
             if (gamepad2.b) {
                 Motors.Lifter().SetPower(-.6);
+                Motors.twoLifter().SetPower(.6);
             }
         }
     }
