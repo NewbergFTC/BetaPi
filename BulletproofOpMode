@@ -174,6 +174,14 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
 
     }
 
+    public void DriveBackwardsf () throws InterruptedException{
+        Motors.FrontRight().SetPower(0.5);
+        Motors.FrontLeft().SetPower(-0.5);
+        Motors.BackRight().SetPower(0.5);
+        Motors.BackLeft().SetPower(-0.5);
+
+    }
+
     public void DriveForwardsGyro (int time) throws InterruptedException{
         double timer = getRuntime();
         double targetTime = timer + time;
@@ -274,6 +282,12 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
         Motors.BackLeft().SetPower(0.8);
         sleep(time);
     }
+    public void DriveForwardsf () throws InterruptedException{
+        Motors.FrontRight().SetPower(-0.5);
+        Motors.FrontLeft().SetPower(0.6);
+        Motors.BackRight().SetPower(-0.5);
+        Motors.BackLeft().SetPower(0.8);
+    }
 
     public void DriveLeft (int time) throws InterruptedException{
         Motors.FrontRight().SetPower(-.5);
@@ -281,6 +295,13 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
         Motors.BackRight().SetPower(.5);
         Motors.BackLeft().SetPower(.5);
         sleep(time);
+
+    }
+    public void DriveLeftf () throws InterruptedException{
+        Motors.FrontRight().SetPower(-.5);
+        Motors.FrontLeft().SetPower(-.5);
+        Motors.BackRight().SetPower(.5);
+        Motors.BackLeft().SetPower(.5);
 
     }
 
@@ -326,6 +347,13 @@ public  abstract class BulletproofOpMode extends LinearVisionOpMode
         Motors.BackRight().SetPower(-.5);
         Motors.BackLeft().SetPower(-.5);
         sleep(time);
+
+    }
+    public void DriveRightf () throws InterruptedException{
+        Motors.FrontRight().SetPower(.5);
+        Motors.FrontLeft().SetPower(.5);
+        Motors.BackRight().SetPower(-.5);
+        Motors.BackLeft().SetPower(-.5);
 
     }
 
