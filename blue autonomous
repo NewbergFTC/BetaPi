@@ -1,0 +1,92 @@
+package us.newberg.bulletproof.opmodes;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtLightSensor;
+
+import org.lasarobotics.vision.android.Cameras;
+import org.lasarobotics.vision.ftc.resq.Beacon;
+import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
+import org.lasarobotics.vision.util.ScreenOrientation;
+import org.opencv.core.Size;
+
+import us.newberg.bulletproof.Motor;
+import us.newberg.bulletproof.lib.Motors;
+import us.newberg.bulletproof.math.Vector2f;
+
+
+/**
+ * Created by thesm_000 on 11/11/2016.
+ */
+@Autonomous(name = "Blue Autonomous", group = "Autonomous")
+public class BlueAutonomous extends BulletproofOpMode {
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        waitForVisionStart();
+
+        setCamera(Cameras.SECONDARY);
+        setFrameSize(new Size(900, 900));
+
+        enableExtension(Extensions.BEACON);
+        enableExtension(Extensions.ROTATION);
+        enableExtension(Extensions.CAMERA_CONTROL);
+
+        beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+
+        beacon.setColorToleranceRed(0);
+        beacon.setColorToleranceBlue(-0.1);
+
+        rotation.setIsUsingSecondaryCamera(true);
+        rotation.disableAutoRotate();
+        rotation.setActivityOrientationFixed(ScreenOrientation.PORTRAIT);
+
+        cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
+        cameraControl.setAutoExposureCompensation();
+
+        Init();
+        waitForStart();
+
+        while (opModeIsActive()) {
+
+            if (lightSensor(LightSensor)) {
+                DriveStop();
+                return;
+            }
+            //DriveRight(200);
+            sleep(5000);
+            boolean FleftSideBlue = beacon.getAnalysis().isLeftBlue();
+            if (FleftSideBlue) {
+                telemetry.addData("Left, mother fucker", 0);
+            } else {
+                telemetry.addData("Right", 0);
+            }
+            sleep(5000);
+            if (hasNewFrame()) {
+                boolean leftSideBlue = beacon.getAnalysis().isLeftBlue();
+
+                if (leftSideBlue) {
+                    telemetry.addData("Left, mother fucker", 0);
+                    //DriveForwards(100);
+                    DriveRight(200);
+                    DriveStop();
+                    DriveLeft(200);
+                    DriveStop();
+                } else {
+                    telemetry.addData("Right", 0);
+                    DriveBackwards(800);
+                    DriveRight(200);
+                    DriveStop();
+                    DriveLeft(200);
+                    DriveStop();
+                }
+
+                sleep(1000);
+
+            }
+
+            telemetry.update();
+            waitOneFullHardwareCycle();
+        }
+    }
+}
