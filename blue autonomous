@@ -68,16 +68,16 @@ public class BlueAutonomous extends BulletproofOpMode {
                 if (leftSideBlue) {
                     telemetry.addData("Left, mother fucker", 0);
                     //DriveForwards(100);
-                    DriveRight(200);
-                    DriveStop();
-                    DriveLeft(200);
+//                    DriveRight(200);
+//                    DriveStop();
+//                    DriveLeft(200);
                     DriveStop();
                 } else {
                     telemetry.addData("Right", 0);
                     DriveBackwards(800);
-                    DriveRight(200);
-                    DriveStop();
-                    DriveLeft(200);
+//                    DriveRight(200);
+//                    DriveStop();
+//                    DriveLeft(200);
                     DriveStop();
                 }
 
@@ -85,8 +85,11 @@ public class BlueAutonomous extends BulletproofOpMode {
 
             }
 
+            while(ultrasonicSensor.getUltrasonicLevel() >= 2) {
+                telemetry.addData("Data", ultrasonicSensor.getUltrasonicLevel());
+                DriveRightf();
+            }
             telemetry.update();
-            waitOneFullHardwareCycle();
-        }
+            waitOneFullHardwareCycle();}
     }
 }
