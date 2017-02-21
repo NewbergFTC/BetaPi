@@ -26,6 +26,8 @@ public class Motors
     private static Motor _collector;
     private static Motor _flipper;
     private static Motor _lifter;
+    //private static Motor _ballSteal;
+    private static Motor _twoLifter;
 
     public static void Init(HardwareMap hardwareMap)
     {
@@ -36,7 +38,18 @@ public class Motors
         _collector = new Motor(hardwareMap.dcMotor.get("collector"), false);
         _flipper = new Motor(hardwareMap.dcMotor.get("flipper"), false);
         _lifter = new Motor(hardwareMap.dcMotor.get("lifter"), false);
+        //_ballSteal = new Motor(hardwareMap.dcMotor.get("ballSteal"), false);
+        _twoLifter = new Motor(hardwareMap.dcMotor.get("2lifter"), false);
     }
+
+//    public static Motor ballSteal()
+//    {
+//        if (_ballSteal == null)
+//        {
+//            throw new AssertionError("ballSteal Motor null");
+//        }
+//        return _ballSteal;
+//    }
     public static Motor Lifter()
     {
         if (_lifter == null)
@@ -44,6 +57,15 @@ public class Motors
             throw new AssertionError("Lifter Motor null");
         }
         return _lifter;
+    }
+
+    public static Motor twoLifter()
+    {
+        if (_twoLifter == null)
+        {
+            throw new AssertionError("Lifter Motor null");
+        }
+        return _twoLifter;
     }
 
     public static Motor Flipper()
