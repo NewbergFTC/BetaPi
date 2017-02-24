@@ -345,11 +345,11 @@ public class DriverOpMode extends BulletproofOpMode
             }
             if (gamepad1.x) {
                 Motors.Flipper().SetPower(-.7);
-                sleep(700);
+                sleep(900);
                 Motors.Flipper().SetPower(0);
                 sleep(200);
-                Motors.Flipper().SetPower(.3);
-                sleep(1300);
+                Motors.Flipper().SetPower(.4);
+                sleep(1400);
                 Motors.Flipper().SetPower(0);
             }
 
