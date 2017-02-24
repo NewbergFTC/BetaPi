@@ -49,12 +49,18 @@ public class BlueAutonomous extends BulletproofOpMode {
 
         while (opModeIsActive()) {
 
-            if (lightSensor(LightSensor)) {
+            if (lightSensorLF(LightSensor)) {
                 DriveStop();
                 return;
             }
+            TurnCounterClockWise(590);
+            DriveStop();
+            DriveStop();
+            DriveStop();
             //DriveRight(200);
             sleep(5000);
+            DriveBackwards(650);
+            //DriveRightForwards(300);
             boolean FleftSideBlue = beacon.getAnalysis().isLeftBlue();
             if (FleftSideBlue) {
                 telemetry.addData("Left, mother fucker", 0);
@@ -74,14 +80,14 @@ public class BlueAutonomous extends BulletproofOpMode {
                     DriveStop();
                 } else {
                     telemetry.addData("Right", 0);
-                    DriveBackwards(800);
+                    DriveBackwards(200);
 //                    DriveRight(200);
 //                    DriveStop();
 //                    DriveLeft(200);
                     DriveStop();
                 }
 
-                sleep(1000);
+                //sleep(1000);
 
             }
 
@@ -89,6 +95,48 @@ public class BlueAutonomous extends BulletproofOpMode {
                 telemetry.addData("Data", ultrasonicSensor.getUltrasonicLevel());
                 DriveRightf();
             }
+
+            DriveLeft(1000);
+            TurnClockWise(400);
+
+            if (lightSensorLF(LightSensor)) {
+                DriveStop();
+                return;
+            }
+
+            TurnCounterClockWise(455);
+            DriveBackwards(300);
+
+            if (hasNewFrame()) {
+                boolean leftSideBlue = beacon.getAnalysis().isLeftBlue();
+
+                if (leftSideBlue) {
+                    telemetry.addData("Left, mother fucker", 0);
+                    //DriveForwards(100);
+//                    DriveRight(200);
+//                    DriveStop();
+//                    DriveLeft(200);
+                    DriveStop();
+                } else {
+                    telemetry.addData("Right", 0);
+                    DriveBackwards(200);
+//                    DriveRight(200);
+//                    DriveStop();
+//                    DriveLeft(200);
+                    DriveStop();
+                }
+
+                //sleep(1000);
+
+            }
+
+            while(ultrasonicSensor.getUltrasonicLevel() >= 2) {
+                telemetry.addData("Data", ultrasonicSensor.getUltrasonicLevel());
+                DriveRightf();
+            }
+
+            DriveLeft(1000);
+
             telemetry.update();
             waitOneFullHardwareCycle();}
     }
