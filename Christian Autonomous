@@ -1,0 +1,254 @@
+package us.newberg.bulletproof.opmodes;
+
+import us.newberg.bulletproof.lib.Motors;
+
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtGyroSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtLightSensor;
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtUltrasonicSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+
+
+import org.lasarobotics.vision.android.Cameras;
+import org.lasarobotics.vision.ftc.resq.Beacon;
+import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
+import org.lasarobotics.vision.util.ScreenOrientation;
+import org.opencv.core.Size;
+
+/**
+ * Created by never on 2/17/2017.
+ */
+@Autonomous(name = "Try1",group = "Common" )
+public class Try1 extends BulletproofOpMode{
+
+    HiTechnicNxtGyroSensor GyroSensor;
+    HiTechnicNxtUltrasonicSensor UltraSonic;
+    HiTechnicNxtColorSensor colorSensor;
+    @Override
+    public void Init()
+    {
+        super.Init();
+        LightSensor = (HiTechnicNxtLightSensor) hardwareMap.lightSensor.get("LightSensor");
+        colorSensor = (HiTechnicNxtColorSensor) hardwareMap.colorSensor.get("colorSensor");
+        GyroSensor = (HiTechnicNxtGyroSensor) hardwareMap.gyroSensor.get("GyroSensor");
+        UltraSonic = (HiTechnicNxtUltrasonicSensor) hardwareMap.ultrasonicSensor.get("ultraSonicSensor");
+    }
+
+    @Override
+    public void runOpMode() throws InterruptedException
+    {
+        Init();
+
+        waitForStart();
+
+        //boolean bPrevState = false;
+        //boolean bCurrState = false;
+
+        boolean bLedOn = true;
+
+        int count = 0;
+
+        //bPrevState = bCurrState;
+
+        waitForVisionStart();
+
+        setCamera(Cameras.SECONDARY);
+        setFrameSize(new Size(900, 900));
+
+        enableExtension(Extensions.BEACON);
+        enableExtension(Extensions.ROTATION);
+        enableExtension(Extensions.CAMERA_CONTROL);
+
+        beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+
+        beacon.setColorToleranceRed(0);
+        beacon.setColorToleranceBlue(-0.1);
+
+        rotation.setIsUsingSecondaryCamera(true);
+        rotation.disableAutoRotate();
+        rotation.setActivityOrientationFixed(ScreenOrientation.PORTRAIT);
+
+        cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
+        cameraControl.setAutoExposureCompensation();
+
+
+        while(opModeIsActive()) {
+
+            //Shoot(.3);
+
+            //Collector(500);
+
+            //Shoot(.3);
+
+            //TurnClockWise(400);
+
+            // telemetry.addData("Led", bLedOn ? "On" : "Off");
+            telemetry.addData("Raw", LightSensor.getRawLightDetected());
+            // telemetry.addData("Normal", LightSensor.getLightDetected());
+            // telemetry.addData("Distance", ultrasonicSensor.getUltrasonicLevel());
+
+            LightSensor.enableLed(bLedOn);
+
+            telemetry.update();
+
+
+
+
+        while(opModeIsActive()) {
+            telemetry.addData("Read", LightSensor.getRawLightDetected());
+            //telemetry.addData("Distance", ultrasonicSensor.getUltrasonicLevel());
+
+            sleep(1000);
+
+            while (LightSensor.getRawLightDetected() <= 1.14){
+                telemetry.addData("Read", LightSensor.getRawLightDetected());
+                DriveDiagnalLeftn();
+                telemetry.update();
+
+                if(LightSensor.getRawLightDetected() >= 1.14){
+                    telemetry.addLine("Line Found");
+                    DriveStop(2000);
+                    sTurnCounterClockWise(590);
+                    DriveStop(2000);
+                    sDriveBackwards(650);
+                    DriveStop(2000);
+                    sDriveDiagnalRight(500);
+        //4a            DriveRight(500);
+               //.
+                    //
+                    //   TurnClockWise(300);
+                    DriveStop(2000);
+                    break;
+                }
+            }
+            //put color sensor code here
+            if (hasNewFrame()) {
+                boolean leftSideBlue = beacon.getAnalysis().isLeftBlue();
+
+                if (leftSideBlue) {
+                    telemetry.addData("Left", 0);
+
+                    //DriveForwards(100);
+                    DriveStop(2000);
+                    telemetry.update();
+
+                } else {
+
+                    telemetry.addData("Right", 0);
+
+                    DriveBackwards(200);
+                    DriveStop(2000);
+                    telemetry.update();
+
+                }
+            }
+            DriveRight(1500);
+            DriveStop(3000);
+            //end
+
+            while(true){
+                DriveLeft(1000);
+                DriveStop(1000);
+                sTurnClockWise(400);
+                DriveStop(2000);
+                DriveDiagnalLeft(1000);
+                DriveStop(2000);
+
+                break;
+            }
+
+            while(LightSensor.getRawLightDetected() <= 1.14){
+                telemetry.addData("Read", LightSensor.getRawLightDetected());
+                DriveDiagnalLeftn();
+                telemetry.update();
+                if(LightSensor.getRawLightDetected() >= 1.14){
+                    telemetry.addLine("Line Found");
+                    DriveStop(2000);
+                    sTurnCounterClockWise(455);
+                    DriveStop(2000);
+                    DriveBackwards(300);
+                    DriveStop(2000);
+
+                    break;
+                }
+            }
+
+            if (hasNewFrame()) {
+                boolean leftSideBlue = beacon.getAnalysis().isLeftBlue();
+
+                if (leftSideBlue) {
+                    telemetry.addData("Left", 0);
+
+                    //DriveForwards(100);
+                    DriveStop(2000);
+
+                } else {
+
+                    telemetry.addData("Right", 0);
+                    DriveBackwards(800);
+                    DriveStop(2000);
+
+                }
+            }
+
+            DriveRight(1500);
+            DriveStop(1000);
+            DriveLeft(1500);
+            DriveStop(1000);
+
+            sleep(10000);
+
+//this is the Line follower code
+            /*while(LightSensor.getRawLightDetected() <= 1.14 && count < 3 ){
+                     telemetry.addData("1st Loop Count", count);
+                     telemetry.addData("Light Data", LightSensor.getRawLightDetected());
+               //      telemetry.addData("Distance", ultrasonicSensor.getUltrasonicLevel());
+
+
+                     sDriveDiagnalRight(500);
+                     DriveStop(1000);
+
+                     count++;
+
+                     telemetry.update();
+                }
+
+                count = 0;
+
+                while(LightSensor.getRawLightDetected() <= 1.14 && count < 6){
+                    telemetry.addData("2nd Loop Count", count);
+                    telemetry.addData("Light Data", LightSensor.getRawLightDetected());
+            //        telemetry.addData("Distance", ultrasonicSensor.getUltrasonicLevel());
+
+                    sDriveDiagnalLeft(10000);
+                    DriveStop(1000);
+
+                    count++;
+
+                    telemetry.update();
+
+//                    if(ultrasonicSensor.getUltrasonicLevel() <= 60){
+//                        telemetry.addLine("Wall");
+//                        break;
+//                    }
+                    if(count >= 6){
+                        telemetry.addLine("No Line Found");
+
+                        break;
+                    }
+
+
+                }
+*/
+            }
+
+        }
+
+    }
+
+}
+
+
+
+
